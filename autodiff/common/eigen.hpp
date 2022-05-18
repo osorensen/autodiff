@@ -31,6 +31,7 @@
 
 // Eigen includes
 #include <Eigen/Core>
+#include <Eigen/SparseCore>
 
 // autodiff includes
 #include <autodiff/common/vectortraits.hpp>
@@ -46,7 +47,8 @@ using Array##SizeSuffix##SizeSuffix##TypeSuffix = Eigen::Array<Type, Size, Size>
 using Array##SizeSuffix##TypeSuffix             = Eigen::Array<Type, Size, 1>;                    \
 using Matrix##SizeSuffix##TypeSuffix            = Eigen::Matrix<Type, Size, Size, 0, Size, Size>; \
 using Vector##SizeSuffix##TypeSuffix            = Eigen::Matrix<Type, Size, 1, 0, Size, 1>;       \
-using RowVector##SizeSuffix##TypeSuffix         = Eigen::Matrix<Type, 1, Size, 1, 1, Size>;
+using RowVector##SizeSuffix##TypeSuffix         = Eigen::Matrix<Type, 1, Size, 1, 1, Size>;\
+using SparseMatrix##SizeSuffix##TypeSuffix      = Eigen::SparseMatrix<Type, 0, int>;
 
 #define AUTODIFF_DEFINE_EIGEN_FIXED_TYPEDEFS(Type, TypeSuffix, Size)            \
 using Array##Size##X##TypeSuffix  = Eigen::Array<Type, Size, -1>;               \
@@ -79,6 +81,15 @@ struct VectorTraits<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>
 
     template<typename NewValueType>
     using ReplaceValueType = Eigen::Matrix<NewValueType, Rows, Cols, Options, MaxRows, MaxCols>;
+};
+
+template<typename Scalar, int Options, typename StorageIndex>
+struct VectorTraits<Eigen::SparseMatrix<Scalar, Options, StorageIndex>>
+{
+  using ValueType = Scalar;
+  
+  template<typename NewValueType>
+  using ReplaceValueType = Eigen::SparseMatrix<NewValueType, Options, StorageIndex>;
 };
 
 template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
@@ -141,6 +152,9 @@ using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1, 0, Eigen::Dynamic, 1>;
 
 template<typename Scalar>
 using MatrixX = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, Eigen::Dynamic>;
+
+template<typename Scalar>
+using SparseMatrixX = Eigen::SparseMatrix<Scalar, 0, int>;
 
 } // namespace detail
 } // namespace autodiff
